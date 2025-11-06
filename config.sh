@@ -15,7 +15,7 @@ shconf=$(basename $SHELL)
 shconf+="rc"
 
 # checking if nick is already installed
-if [[ -n $(which nick 2>/dev/null) ]]; then
+if [[ -n $(which $HOME/.local/bin/nick 2>/dev/null) ]]; then
   printf "$LABEL WARNING: $RESET$LABEL2 nick already exists $RESET\n"
   read -p "[?] Do you want to unistall it? (Y/N) " -n1 unistall
 
@@ -25,7 +25,7 @@ if [[ -n $(which nick 2>/dev/null) ]]; then
   fi
 
   printf "\n\n$ERROR [X] $RESET$PARAM Finding nick... $RESET\n"
-  delted=$(rm -v $(which nick 2>/dev/null))
+  delted=$(rm -v $(which $HOME/.local/bin/nick 2>/dev/null))
   printf "$LABEL[!] $PARAM Removing export from $PRG$shconf $RESET\n"
   pattern="# nick path"
   grep -vF "$pattern" "$HOME/.$shconf" > "$HOME/.$shconf.tmp" && mv "$HOME/.$shconf.tmp" "$HOME/.$shconf"
@@ -34,13 +34,16 @@ if [[ -n $(which nick 2>/dev/null) ]]; then
 fi
 
 printf "$SUCCESS [+] $PARAM Installing nick... $RESET \n"
-cppath=$(cp -v nick $defaultInstPath)
+cp -v nick.sh nick
+cppath=$(mv -v nick $defaultInstPath/nick)
 printf "$SUCCESS [+] $PARAM$PRG nick $RESET$PARAM installed in $PRG%s $RESET\n" ${defaultInstPath}
 chmod u+x "$defaultInstPath/nick" 
 printf "$SUCCESS [+] $PARAM Execution persmissions granted $RESET \n"
 if [[ ":$PATH:" != *":$defaultInstPath:"* ]]; then
-  echo 'export PATH="$defaultInstPath:$PATH"" # nick path' >> $HOME/.$shconf
-  printf "$SUCCESS [+] $PARAM Adding executable to path... $RESET\n"
+  echo "export PATH=\"$defaultInstPath:$PATH\" # nick path" >> $HOME/.$shconf
+  printf "$SUCCESS [+] $PARAM Adding executable to path... $PRG%s $RESET\n" "$HOME/.$shconf"
+  printf "$WARNING [!] $PARAM Update changes, run now: $RESET\n"
+  echo "    source $HOME/.$shconf"
 else
   printf "$LABEL2[!] $PARAM Path already installed $RESET\n"
 fi 
